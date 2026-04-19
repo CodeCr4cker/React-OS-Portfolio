@@ -1,0 +1,65 @@
+/* ============================================================
+   THEME SYSTEM — DivyOS React
+   ============================================================ */
+
+/* Default: Dark (already defined in global.css :root) */
+
+/* Neon Theme */
+[data-theme="neon"] {
+  --bg:       #060810;
+  --surface:  #0d1020;
+  --surface2: #141830;
+  --border:   #2d1b69;
+  --neon:     #ff00ff;
+  --neon2:    #00ffff;
+  --neon3:    #ffff00;
+  --win-bg:   rgba(6,8,16,0.97);
+  --glow:     0 0 25px rgba(255,0,255,0.5);
+  --glow2:    0 0 35px rgba(0,255,255,0.5);
+}
+
+/* Light Theme */
+[data-theme="light"] {
+  --bg:        #f0f4f8;
+  --surface:   #ffffff;
+  --surface2:  #e8edf3;
+  --border:    #cbd5e1;
+  --neon:      #0369a1;
+  --neon2:     #7c3aed;
+  --text:      #1a202c;
+  --text-dim:  #64748b;
+  --text-muted:#94a3b8;
+  --win-bg:    rgba(255,255,255,0.96);
+  --win-bar:   #f8fafc;
+  --glow:      0 0 20px rgba(3,105,161,0.3);
+  --glow2:     0 0 30px rgba(124,58,237,0.3);
+}
+
+/* Synthwave Theme */
+[data-theme="synthwave"] {
+  --bg:       #0f0826;
+  --surface:  #1a1040;
+  --surface2: #231558;
+  --border:   #4a1f7f;
+  --neon:     #ff6ec7;
+  --neon2:    #f59e0b;
+  --neon3:    #34d399;
+  --win-bg:   rgba(15,8,38,0.97);
+  --glow:     0 0 25px rgba(255,110,199,0.5);
+  --glow2:    0 0 35px rgba(245,158,11,0.5);
+}
+
+/* Matrix Theme */
+[data-theme="matrix"] {
+  --bg:       #000a00;
+  --surface:  #001200;
+  --surface2: #001a00;
+  --border:   #003300;
+  --neon:     #00ff41;
+  --neon2:    #008f11;
+  --neon3:    #00ff41;
+  --text:     #c8ffc8;
+  --win-bg:   rgba(0,10,0,0.97);
+  --glow:     0 0 20px rgba(0,255,65,0.5);
+  --glow2:    0 0 30px rgba(0,143,17,0.5);
+}
