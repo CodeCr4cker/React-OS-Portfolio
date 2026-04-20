@@ -1,6 +1,16 @@
 import React from 'react'
 import { motion } from 'framer-motion'
 
+function useIsMobile() {
+  const [mobile, setMobile] = React.useState(() => window.innerWidth <= 768)
+  React.useEffect(() => {
+    const h = () => setMobile(window.innerWidth <= 768)
+    window.addEventListener('resize', h)
+    return () => window.removeEventListener('resize', h)
+  }, [])
+  return mobile
+}
+
 const SKILLS_PREVIEW = [
   { label: 'React / JS', pct: 88, color: '#00d4ff' },
   { label: 'Python',     pct: 82, color: '#7b2ff7' },
@@ -17,22 +27,32 @@ const TIMELINE = [
 ]
 
 export default function About() {
+  const isMobile = useIsMobile()
+
   return (
-    <div style={{ height: '100%', overflowY: 'auto', background: 'var(--win-bg)', fontFamily: 'var(--font-sans)' }}>
-      <div style={{ padding: '2rem' }}>
+    <div style={{ height: '100%', overflowY: 'auto', background: 'var(--win-bg)', fontFamily: 'var(--font-sans)', WebkitOverflowScrolling: 'touch' }}>
+      <div style={{ padding: isMobile ? '1rem' : '2rem', maxWidth: 680, margin: '0 auto' }}>
 
         {/* Profile Header */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           style={{
-            display: 'flex', gap: '1.5rem', alignItems: 'center',
-            marginBottom: '2rem', paddingBottom: '1.5rem',
+            display: 'flex',
+            flexDirection: isMobile ? 'column' : 'row',
+            gap: isMobile ? '1rem' : '1.5rem',
+            alignItems: isMobile ? 'center' : 'center',
+            marginBottom: '1.5rem',
+            paddingBottom: '1.25rem',
             borderBottom: '1px solid var(--border)',
+            textAlign: isMobile ? 'center' : 'left',
           }}
         >
+          {/* Avatar */}
           <div style={{
-            width: '90px', height: '90px', borderRadius: '50%', overflow: 'hidden', flexShrink: 0,
+            width: isMobile ? '80px' : '90px',
+            height: isMobile ? '80px' : '90px',
+            borderRadius: '50%', overflow: 'hidden', flexShrink: 0,
             boxShadow: '0 0 0 3px var(--neon2), 0 0 20px rgba(123,47,247,0.4)',
           }}>
             <img
@@ -41,39 +61,43 @@ export default function About() {
               style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
             />
           </div>
-          <div>
-            <h1 style={{ fontSize: '1.4rem', fontWeight: 700, color: 'var(--text)', marginBottom: '0.25rem' }}>
+
+          {/* Info */}
+          <div style={{ flex: 1 }}>
+            <h1 style={{ fontSize: isMobile ? '1.2rem' : '1.4rem', fontWeight: 700, color: 'var(--text)', marginBottom: '0.2rem' }}>
               Divyanshu Pandey
             </h1>
-            <p style={{ color: 'var(--neon)', fontFamily: 'var(--font-mono)', fontSize: '0.8rem', marginBottom: '0.5rem' }}>
+            <p style={{ color: 'var(--neon)', fontFamily: 'var(--font-mono)', fontSize: '0.78rem', marginBottom: '0.5rem' }}>
               Web Developer & Student
             </p>
-            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap', justifyContent: isMobile ? 'center' : 'flex-start' }}>
               {['React', 'Python', 'Firebase', 'CSS'].map(tag => (
                 <span key={tag} style={{
                   padding: '2px 8px', borderRadius: '20px',
                   background: 'rgba(0,212,255,0.1)', border: '1px solid rgba(0,212,255,0.2)',
-                  fontSize: '0.65rem', fontFamily: 'var(--font-mono)', color: 'var(--neon)',
+                  fontSize: '0.62rem', fontFamily: 'var(--font-mono)', color: 'var(--neon)',
                 }}>
                   {tag}
                 </span>
               ))}
             </div>
-          </div>
-          <div style={{ marginLeft: 'auto', textAlign: 'right' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', justifyContent: 'flex-end', marginBottom: '0.3rem' }}>
-              <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#39ff14', boxShadow: '0 0 6px #39ff14' }} />
-              <span style={{ fontSize: '0.7rem', fontFamily: 'var(--font-mono)', color: 'var(--green)' }}>Available for work</span>
-            </div>
-            <div style={{ fontSize: '0.68rem', color: 'var(--text-dim)', fontFamily: 'var(--font-mono)' }}>
-              📍 Kanpur, India
+
+            {/* Status — inline on mobile */}
+            <div style={{ marginTop: '0.6rem', display: 'flex', gap: '1rem', justifyContent: isMobile ? 'center' : 'flex-start', flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                <div style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#39ff14', boxShadow: '0 0 6px #39ff14', flexShrink: 0 }} />
+                <span style={{ fontSize: '0.68rem', fontFamily: 'var(--font-mono)', color: 'var(--green)' }}>Available for work</span>
+              </div>
+              <div style={{ fontSize: '0.68rem', color: 'var(--text-dim)', fontFamily: 'var(--font-mono)' }}>
+                📍 Kanpur, India
+              </div>
             </div>
           </div>
         </motion.div>
 
         {/* Bio */}
         <Section title="whoami" icon="fas fa-terminal">
-          <p style={{ fontSize: '0.85rem', lineHeight: 1.8, color: 'var(--text-dim)' }}>
+          <p style={{ fontSize: isMobile ? '0.82rem' : '0.85rem', lineHeight: 1.8, color: 'var(--text-dim)' }}>
             I'm a passionate web developer and Computer Science student from Kanpur, India.
             I love building futuristic, interactive web experiences and exploring the intersection
             of design and technology. When I'm not coding, I'm learning about AI/ML, contributing
@@ -118,24 +142,24 @@ export default function About() {
                 initial={{ opacity: 0, x: -12 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: i * 0.08 }}
-                style={{ display: 'flex', gap: '1rem', marginBottom: '1.25rem', paddingLeft: '0.5rem' }}
+                style={{ display: 'flex', gap: '0.75rem', marginBottom: '1rem', paddingLeft: '0.5rem' }}
               >
                 <div style={{
                   width: '26px', height: '26px', borderRadius: '50%', flexShrink: 0,
                   background: 'var(--surface2)', border: '2px solid var(--neon)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: '0.75rem', zIndex: 1,
+                  fontSize: '0.7rem', zIndex: 1,
                 }}>
                   {item.icon}
                 </div>
                 <div>
-                  <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginBottom: '0.2rem' }}>
-                    <span style={{ fontSize: '0.62rem', fontFamily: 'var(--font-mono)', color: 'var(--neon)', border: '1px solid rgba(0,212,255,0.3)', padding: '1px 6px', borderRadius: '3px' }}>
+                  <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center', marginBottom: '0.2rem', flexWrap: 'wrap' }}>
+                    <span style={{ fontSize: '0.6rem', fontFamily: 'var(--font-mono)', color: 'var(--neon)', border: '1px solid rgba(0,212,255,0.3)', padding: '1px 6px', borderRadius: '3px', flexShrink: 0 }}>
                       {item.year}
                     </span>
-                    <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text)' }}>{item.title}</span>
+                    <span style={{ fontSize: isMobile ? '0.78rem' : '0.8rem', fontWeight: 600, color: 'var(--text)' }}>{item.title}</span>
                   </div>
-                  <p style={{ fontSize: '0.72rem', color: 'var(--text-dim)', lineHeight: 1.6 }}>{item.desc}</p>
+                  <p style={{ fontSize: '0.7rem', color: 'var(--text-dim)', lineHeight: 1.6 }}>{item.desc}</p>
                 </div>
               </motion.div>
             ))}
@@ -144,12 +168,12 @@ export default function About() {
 
         {/* Contact Links */}
         <Section title="contact" icon="fas fa-link">
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : '1fr 1fr', gap: isMobile ? '0.4rem' : '0.5rem' }}>
             {[
-              { icon: 'fab fa-github',    label: 'GitHub',    url: 'https://github.com/CodeCr4cker', color: '#fff' },
-              { icon: 'fab fa-youtube',   label: 'YouTube',   url: 'https://youtube.com/@CodeCr4cker', color: '#ff0000' },
-              { icon: 'fas fa-envelope',  label: 'Email',     url: 'mailto:divyanshu@example.com', color: 'var(--neon)' },
-              { icon: 'fab fa-linkedin',  label: 'LinkedIn',  url: 'https://linkedin.com', color: '#0a66c2' },
+              { icon: 'fab fa-github',   label: 'GitHub',   url: 'https://github.com/CodeCr4cker',    color: '#fff'      },
+              { icon: 'fab fa-youtube',  label: 'YouTube',  url: 'https://youtube.com/@CodeCr4cker',  color: '#ff0000'   },
+              { icon: 'fas fa-envelope', label: 'Email',    url: 'mailto:divyanshu@example.com',       color: 'var(--neon)' },
+              { icon: 'fab fa-linkedin', label: 'LinkedIn', url: 'https://linkedin.com',               color: '#0a66c2'   },
             ].map(link => (
               <a
                 key={link.label}
@@ -157,16 +181,19 @@ export default function About() {
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
-                  display: 'flex', alignItems: 'center', gap: '0.6rem',
-                  padding: '0.6rem 0.9rem', borderRadius: '8px',
+                  display: 'flex', alignItems: 'center', gap: '0.5rem',
+                  padding: isMobile ? '0.6rem 0.7rem' : '0.6rem 0.9rem',
+                  borderRadius: '8px',
                   background: 'var(--surface)', border: '1px solid var(--border)',
-                  fontSize: '0.78rem', color: 'var(--text)',
+                  fontSize: isMobile ? '0.75rem' : '0.78rem',
+                  color: 'var(--text)', textDecoration: 'none',
                   transition: 'all 0.2s',
+                  WebkitTapHighlightColor: 'transparent',
                 }}
                 onMouseEnter={e => { e.currentTarget.style.borderColor = link.color; e.currentTarget.style.background = 'var(--surface2)' }}
                 onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.background = 'var(--surface)' }}
               >
-                <i className={link.icon} style={{ color: link.color, width: '16px' }} />
+                <i className={link.icon} style={{ color: link.color, width: '16px', flexShrink: 0 }} />
                 {link.label}
               </a>
             ))}
@@ -180,10 +207,10 @@ export default function About() {
 
 function Section({ title, icon, children }) {
   return (
-    <div style={{ marginBottom: '2rem' }}>
+    <div style={{ marginBottom: '1.5rem' }}>
       <div style={{
         display: 'flex', alignItems: 'center', gap: '0.5rem',
-        marginBottom: '0.9rem', paddingBottom: '0.4rem',
+        marginBottom: '0.75rem', paddingBottom: '0.4rem',
         borderBottom: '1px solid rgba(0,212,255,0.1)',
       }}>
         <i className={icon} style={{ color: 'var(--neon)', fontSize: '0.8rem' }} />
