@@ -111,25 +111,11 @@ function AndroidBoot({ onDone }) {
 ═══════════════════════════════════════════════════════════════ */
 function MobileLockScreen({ onUnlock }) {
   const { time, date } = useClock()
-  const [touchStart, setTouchStart] = useState(null)
-  const [dragY, setDragY] = useState(0)
   const [unlocking, setUnlocking] = useState(false)
-  const [showPin, setShowPin]   = useState(false)
-  const [pin, setPin]           = useState('')
-  const [shake, setShake]       = useState(false)
+  const [pin,       setPin]       = useState('')
+  const [shake,     setShake]     = useState(false)
   const PIN = LOCK_PIN
 
-  const handleTouchStart = (e) => setTouchStart(e.touches[0].clientY)
-  const handleTouchMove  = (e) => {
-    if (!touchStart) return
-    const dy = touchStart - e.touches[0].clientY
-    if (dy > 0) setDragY(Math.min(dy, 160))
-  }
-  const handleTouchEnd = () => {
-    if (dragY > 80) triggerUnlock()
-    else setDragY(0)
-    setTouchStart(null)
-  }
   const triggerUnlock = () => {
     setUnlocking(true)
     setTimeout(onUnlock, 350)
@@ -152,9 +138,6 @@ function MobileLockScreen({ onUnlock }) {
       initial={{ opacity: 0 }}
       animate={{ opacity: unlocking ? 0 : 1, y: unlocking ? -40 : 0 }}
       transition={{ duration: 0.35 }}
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
       style={{
         position: 'fixed', inset: 0, zIndex: 6000,
         display: 'flex', flexDirection: 'column',
@@ -177,21 +160,14 @@ function MobileLockScreen({ onUnlock }) {
 
       {/* Top: time + date */}
       <div style={{ textAlign: 'center' }}>
-        <motion.div
-          style={{
-            fontSize: 'clamp(4rem, 18vw, 5.5rem)',
-            fontWeight: 100,
-            fontFamily: 'var(--font-mono)',
-            color: '#fff',
-            letterSpacing: '-2px',
-            lineHeight: 1,
-            textShadow: '0 2px 20px rgba(0,0,0,0.5)',
-            transform: `translateY(-${dragY * 0.4}px)`,
-            transition: touchStart ? 'none' : 'transform 0.4s',
-          }}
-        >
+        <div style={{
+          fontSize: 'clamp(4rem, 18vw, 5.5rem)',
+          fontWeight: 100, fontFamily: 'var(--font-mono)',
+          color: '#fff', letterSpacing: '-2px', lineHeight: 1,
+          textShadow: '0 2px 20px rgba(0,0,0,0.5)',
+        }}>
           {time}
-        </motion.div>
+        </div>
         <div style={{ fontSize: '1rem', color: 'rgba(255,255,255,0.65)', marginTop: '0.4rem', letterSpacing: '0.5px' }}>
           {date}
         </div>
@@ -199,8 +175,8 @@ function MobileLockScreen({ onUnlock }) {
         {/* Notification bubbles */}
         <div style={{ marginTop: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', padding: '0 2rem' }}>
           {[
-            { icon: 'fas fa-comments', app: 'Chat',    msg: 'Welcome to DivyOS! 👋', time: 'now'  },
-            { icon: 'fas fa-robot',    app: 'AI',      msg: 'Ask me anything…',      time: '2m'   },
+            { icon: 'fas fa-comments', app: 'Chat', msg: 'Welcome to DivyOS! 👋', time: 'now' },
+            { icon: 'fas fa-robot',    app: 'AI',   msg: 'Ask me anything…',      time: '2m'  },
           ].map((n, i) => (
             <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 + i * 0.1 }}
               style={{ background: 'rgba(255,255,255,0.12)', backdropFilter: 'blur(16px)', borderRadius: 14, padding: '0.65rem 0.9rem', border: '1px solid rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', gap: '0.75rem', textAlign: 'left' }}>
@@ -215,65 +191,35 @@ function MobileLockScreen({ onUnlock }) {
         </div>
       </div>
 
-      {/* Bottom: swipe indicator OR pin pad */}
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem', width: '100%' }}>
-        {!showPin ? (
-          <>
-            {/* Swipe up arrow */}
-            <motion.div
-              animate={{ y: [0, -10, 0] }}
-              transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
-              style={{ transform: `translateY(-${dragY * 0.6}px)`, transition: touchStart ? 'none' : 'transform 0.4s' }}
-            >
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.4rem' }}>
-                <div style={{ width: 40, height: 4, background: 'rgba(255,255,255,0.5)', borderRadius: 2 }} />
-                <i className="fas fa-chevron-up" style={{ color: 'rgba(255,255,255,0.7)', fontSize: '1rem' }} />
-                <i className="fas fa-chevron-up" style={{ color: 'rgba(255,255,255,0.35)', fontSize: '0.75rem' }} />
-              </div>
-            </motion.div>
-            <div style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.5)', letterSpacing: '2px' }}>
-              SWIPE UP TO UNLOCK
-            </div>
-            <button onClick={() => setShowPin(true)}
-              style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.4)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-mono)', letterSpacing: '1px' }}>
-              Use PIN instead
-            </button>
-            {/* Tap to unlock on desktop */}
-            <button onClick={triggerUnlock}
-              style={{ position: 'absolute', inset: 0, background: 'transparent', border: 'none', cursor: 'pointer', zIndex: -1 }} />
-          </>
-        ) : (
-          /* PIN pad */
-          <motion.div
-            animate={shake ? { x: [0,-12,12,-8,8,-4,4,0] } : {}}
-            transition={{ duration: 0.5 }}
-            style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.25rem', width: '100%' }}
-          >
-            {/* PIN dots */}
-            <div style={{ display: 'flex', gap: '1rem' }}>
-              {[0,1,2,3].map(i => (
-                <div key={i} style={{ width: 14, height: 14, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.5)', background: i < pin.length ? '#fff' : 'transparent', transition: 'background 0.15s' }} />
-              ))}
-            </div>
-            {/* Numpad */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '0.65rem', padding: '0 2rem', width: '100%', maxWidth: 280 }}>
-              {[1,2,3,4,5,6,7,8,9].map(n => (
-                <NumBtn key={n} label={String(n)} onClick={() => handlePinKey(String(n))} />
-              ))}
-              <button onClick={() => setShowPin(false)}
-                style={{ height: 58, borderRadius: '50%', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.5)', fontSize: '0.7rem', cursor: 'pointer', fontFamily: 'var(--font-mono)' }}>
-                ←
-              </button>
-              <NumBtn label="0" onClick={() => handlePinKey('0')} />
-              <button onClick={() => setPin(p => p.slice(0,-1))}
-                style={{ height: 58, borderRadius: '50%', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.15)', color: '#fff', fontSize: '1rem', cursor: 'pointer' }}>
-                ⌫
-              </button>
-            </div>
-            <div style={{ fontSize: '0.6rem', color: 'rgba(255,255,255,0.3)', fontFamily: 'var(--font-mono)' }}>Set your PIN in src/config.js</div>
-          </motion.div>
-        )}
-      </div>
+      {/* PIN pad — always shown, no swipe */}
+      <motion.div
+        animate={shake ? { x: [0,-12,12,-8,8,-4,4,0] } : {}}
+        transition={{ duration: 0.5 }}
+        style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.25rem', width: '100%' }}
+      >
+        <div style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.5)', letterSpacing: '2px', fontFamily: 'var(--font-mono)' }}>
+          ENTER PIN TO UNLOCK
+        </div>
+        {/* PIN dots */}
+        <div style={{ display: 'flex', gap: '1rem' }}>
+          {[0,1,2,3].map(i => (
+            <div key={i} style={{ width: 14, height: 14, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.5)', background: i < pin.length ? '#fff' : 'transparent', transition: 'background 0.15s' }} />
+          ))}
+        </div>
+        {/* Numpad */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '0.65rem', padding: '0 2rem', width: '100%', maxWidth: 280 }}>
+          {[1,2,3,4,5,6,7,8,9].map(n => (
+            <NumBtn key={n} label={String(n)} onClick={() => handlePinKey(String(n))} />
+          ))}
+          <div />
+          <NumBtn label="0" onClick={() => handlePinKey('0')} />
+          <button onClick={() => setPin(p => p.slice(0,-1))}
+            style={{ height: 58, borderRadius: '50%', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.15)', color: '#fff', fontSize: '1rem', cursor: 'pointer' }}>
+            ⌫
+          </button>
+        </div>
+        <div style={{ fontSize: '0.6rem', color: 'rgba(255,255,255,0.3)', fontFamily: 'var(--font-mono)' }}>Set your PIN in src/config.js</div>
+      </motion.div>
     </motion.div>
   )
 }
@@ -427,7 +373,7 @@ export default function MobileUI() {
             </div>
 
             {/* App grid */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: '0.9rem 0.4rem', flex: 1, overflowY: 'auto', paddingBottom: '0.5rem', WebkitOverflowScrolling: 'touch' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: '0.5rem 0.25rem', flex: 1, overflowY: 'auto', paddingBottom: '0.5rem', WebkitOverflowScrolling: 'touch' }}>
               {MOBILE_APPS.map(app => (
                 <AppIcon key={app.appId || app.url} app={app}
                   onOpen={() => {
