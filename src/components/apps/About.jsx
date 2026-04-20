@@ -89,7 +89,7 @@ export default function About() {
                 <span style={{ fontSize: '0.68rem', fontFamily: 'var(--font-mono)', color: 'var(--green)' }}>Available for work</span>
               </div>
               <div style={{ fontSize: '0.68rem', color: 'var(--text-dim)', fontFamily: 'var(--font-mono)' }}>
-                📍 Kanpur, India
+                📍 Prayagraj, India
               </div>
             </div>
           </div>
